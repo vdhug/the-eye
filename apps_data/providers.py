@@ -21,3 +21,9 @@ def update_application(application_id: int, name: str) -> Application:
 def get_application_by_id(application_id: int) -> Application:
     application = Application.objects.get(id=application_id)
     return application
+
+
+def create_session(application_id: int, uuid: UUID) -> Session:
+    _ = get_application_by_id(application_id=application_id)
+    session = Session.objects.create(uuid=uuid, application_id=application_id)
+    return session
