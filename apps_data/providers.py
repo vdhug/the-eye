@@ -32,3 +32,17 @@ def create_session(application_id: int, uuid: UUID) -> Session:
 def get_session_by_uuid(session_uuid: int) -> Session:
     session = Session.objects.get(uuid=session_uuid)
     return session
+
+
+def create_event(
+    session_uuid: UUID, name: str, category: str, payload: dict, timestamp: datetime
+) -> Event:
+    _ = get_session_by_uuid(session_uuid=session_uuid)
+    event = Event.objects.create(
+        session_id=session_uuid,
+        name=name,
+        category=category,
+        payload=payload,
+        timestamp=timestamp,
+    )
+    return event
