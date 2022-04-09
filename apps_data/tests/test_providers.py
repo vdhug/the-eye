@@ -43,3 +43,22 @@ def test_update_application__application_does_not_exists(django_assert_num_queri
     with django_assert_num_queries(num=1):
         with pytest.raises(Application.DoesNotExist):
             _ = apps_data_providers.update_application(application_id=0, name="Foo")
+
+
+@pytest.mark.django_db
+def test_get_application_by_id(django_assert_num_queries):
+    application = apps_data_recipes.application_mommy_recipe.make()
+    with django_assert_num_queries(num=1):
+        retrieved_application = apps_data_providers.get_application_by_id(
+            application_id=application.id
+        )
+        assert retrieved_application is not None
+        assert isinstance(retrieved_application, Application) is True
+        assert retrieved_application.id == application.id
+
+
+@pytest.mark.django_db
+def test_get_application_by_id__application_does_not_exists(django_assert_num_queries):
+    with django_assert_num_queries(num=1):
+        with pytest.raises(Application.DoesNotExist):
+            _ = apps_data_providers.get_application_by_id(application_id=0)
