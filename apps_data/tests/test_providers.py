@@ -85,3 +85,23 @@ def test_create_session__application_does_not_exists(django_assert_num_queries):
             _ = apps_data_providers.create_session(
                 application_id=0, uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
             )
+
+
+@pytest.mark.django_db
+def test_get_session_by_uuid(django_assert_num_queries):
+    session = apps_data_recipes.session_mommy_recipe.make()
+    with django_assert_num_queries(num=1):
+        retrieved_session = apps_data_providers.get_session_by_uuid(session_uuid=session.uuid)
+        assert retrieved_session is not None
+        assert isinstance(retrieved_session, Session) is True
+        assert retrieved_session.uuid == session.uuid
+
+
+@pytest.mark.django_db
+def test_get_session_by_uuid__session_does_not_exists(django_assert_num_queries):
+    _ = apps_data_recipes.session_mommy_recipe.make()
+    with django_assert_num_queries(num=1):
+        with pytest.raises(Session.DoesNotExist):
+            _ = apps_data_providers.get_session_by_uuid(
+                session_uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
+            )
