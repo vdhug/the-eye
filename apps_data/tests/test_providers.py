@@ -21,3 +21,25 @@ def test_create_application(django_assert_num_queries):
         assert application is not None
         assert isinstance(application, Application) is True
         assert application.name == "Web App"
+
+
+@pytest.mark.django_db
+def test_update_application(django_assert_num_queries):
+    application = apps_data_recipes.application_mommy_recipe.make()
+    assert application.name == "Web App"
+    with django_assert_num_queries(num=2):
+        application_edited = apps_data_providers.update_application(
+            application_id=application.id, name="Web App Edited"
+        )
+        assert isinstance(application_edited, Application) is True
+        assert application.id == application_edited.id
+        assert application_edited.name == "Web App Edited"
+
+
+@pytest.mark.django_db
+def test_update_application__application_does_not_exists(django_assert_num_queries):
+    application = apps_data_recipes.application_mommy_recipe.make()
+    assert application.name == "Web App"
+    with django_assert_num_queries(num=1):
+        with pytest.raises(Application.DoesNotExist):
+            _ = apps_data_providers.update_application(application_id=0, name="Foo")
