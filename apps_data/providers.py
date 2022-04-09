@@ -46,3 +46,8 @@ def create_event(
         timestamp=timestamp,
     )
     return event
+
+
+def get_event_by_id(event_id: int) -> Event:
+    event = Event.objects.get(id=event_id)
+    return event
