@@ -16,3 +16,8 @@ def update_application(application_id: int, name: str) -> Application:
     application.name = name
     application.save(update_fields=["name"])
     return application
+
+
+def get_application_by_id(application_id: int) -> Application:
+    application = Application.objects.get(id=application_id)
+    return application
