@@ -7,7 +7,9 @@ services:
       dockerfile: Dockerfile
     command: bash -c 'python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
     environment:
-    - DJANGO_SETTINGS_MODULE=the_eye.settings
+      - DJANGO_SETTINGS_MODULE=the_eye.settings
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
     ports:
       # localhost:remote
       - 8000:8000
@@ -16,6 +18,17 @@ services:
       - .:/app
     depends_on:
       - db
+      - redis
+  
+  celery:
+    build: .
+    command: celery -A the_eye worker -l INFO
+    volumes:
+      # Creating bound between root directory and directory from remote
+      - .:/app
+    depends_on:
+      - backend
+      - redis
   
   db:
     image: postgres:13-alpine
@@ -32,3 +45,6 @@ services:
       - POSTGRES_PASSWORD=root
     ports:
       - 5432:5432
+  
+  redis:
+    image: redis:alpine
