@@ -149,3 +149,21 @@ def test_create_event__session_does_not_exists(django_assert_num_queries):
                 payload={"host": "www.consumeraffairs.com", "path": "/", "element": "chat bubble"},
                 timestamp=timestamp,
             )
+
+
+@pytest.mark.django_db
+def test_get_event_by_id(django_assert_num_queries):
+    timestamp = make_aware(
+        datetime.strptime("2021-01-04 09:15:27.243860", "%Y-%m-%d %H:%M:%S.%f"), TIMEZONE
+    )
+    event = apps_data_recipes.event_mommy_recipe.make(timestamp=timestamp)
+    with django_assert_num_queries(num=1):
+        retrieved_event = apps_data_providers.get_event_by_id(event_id=event.id)
+        assert retrieved_event is not None
+        assert isinstance(retrieved_event, Event) is True
+        assert retrieved_event.id == event.id
+        assert retrieved_event.session_id == event.session_id
+        assert retrieved_event.name == event.name
+        assert retrieved_event.category == event.category
+        assert retrieved_event.payload == event.payload
+        assert retrieved_event.timestamp == timestamp
