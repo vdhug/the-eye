@@ -105,3 +105,47 @@ def test_get_session_by_uuid__session_does_not_exists(django_assert_num_queries)
             _ = apps_data_providers.get_session_by_uuid(
                 session_uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
             )
+
+
+@pytest.mark.django_db
+def test_create_event(django_assert_num_queries):
+    session = apps_data_recipes.session_mommy_recipe.make()
+    with django_assert_num_queries(num=2):
+        timestamp = make_aware(
+            datetime.strptime("2021-01-01 09:15:27.243860", "%Y-%m-%d %H:%M:%S.%f"), TIMEZONE
+        )
+        event = apps_data_providers.create_event(
+            session_uuid=session.uuid,
+            name="cta click",
+            category="page interaction",
+            payload={"host": "www.consumeraffairs.com", "path": "/", "element": "chat bubble"},
+            timestamp=timestamp,
+        )
+        assert event is not None
+        assert isinstance(event, Event) is True
+        assert event.session_id == session.uuid
+        assert event.name == "cta click"
+        assert event.category == "page interaction"
+        assert event.payload == {
+            "host": "www.consumeraffairs.com",
+            "path": "/",
+            "element": "chat bubble",
+        }
+        assert event.timestamp == timestamp
+
+
+@pytest.mark.django_db
+def test_create_event__session_does_not_exists(django_assert_num_queries):
+    _ = apps_data_recipes.session_mommy_recipe.make()
+    with django_assert_num_queries(num=1):
+        with pytest.raises(Session.DoesNotExist):
+            timestamp = make_aware(
+                datetime.strptime("2021-01-01 09:15:27.243860", "%Y-%m-%d %H:%M:%S.%f"), TIMEZONE
+            )
+            _ = apps_data_providers.create_event(
+                session_uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce"),
+                name="cta click",
+                category="page interaction",
+                payload={"host": "www.consumeraffairs.com", "path": "/", "element": "chat bubble"},
+                timestamp=timestamp,
+            )
