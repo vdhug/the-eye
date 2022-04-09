@@ -27,3 +27,8 @@ def create_session(application_id: int, uuid: UUID) -> Session:
     _ = get_application_by_id(application_id=application_id)
     session = Session.objects.create(uuid=uuid, application_id=application_id)
     return session
+
+
+def get_session_by_uuid(session_uuid: int) -> Session:
+    session = Session.objects.get(uuid=session_uuid)
+    return session
