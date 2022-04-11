@@ -2,7 +2,7 @@ from unittest import mock
 
 from apps_data import services as apps_data_services
 from apps_data.exceptions import ApplicationDoesNotExists
-from apps_data.models import Application
+from apps_data.models import Application, Session
 
 
 @mock.patch("apps_data.services.apps_data_providers.get_application_by_name")
@@ -59,3 +59,79 @@ def test_mock_get_or_create_application__application_does_not_exists(
     mock_build_dataclass_from_model_instance.assert_called_once()
 
     assert result == application_data
+
+
+@mock.patch("apps_data.services.get_or_create_application_by_name")
+@mock.patch("apps_data.services.apps_data_providers.get_session_by_uuid")
+@mock.patch("apps_data.services.build_dataclass_from_model_instance")
+def test_mock_get_or_create_session_by_application_name_and_session_id__session_exists(
+    mock_build_dataclass_from_model_instance,
+    mock_get_session_by_uuid,
+    mock_get_or_create_application_by_name,
+):
+    # Argument
+    application_name = mock.Mock()
+    session_id = mock.Mock()
+
+    # Setup
+    application_data = mock.Mock()
+    session = mock.Mock()
+    session_data = mock.Mock()
+
+    mock_get_or_create_application_by_name.return_value = application_data
+    mock_get_session_by_uuid.return_value = session
+    mock_build_dataclass_from_model_instance.return_value = session_data
+
+    # Execution
+    result = apps_data_services.get_or_create_session_by_application_name_and_session_id(
+        application_name=application_name, session_id=session_id
+    )
+
+    # Assertions
+    mock_get_or_create_application_by_name.assert_called_once_with(
+        application_name=application_name,
+    )
+    mock_get_session_by_uuid.assert_called_once_with(session_uuid=session_id)
+    mock_build_dataclass_from_model_instance.assert_called_once()
+
+    assert result == session_data
+
+
+@mock.patch("apps_data.services.get_or_create_application_by_name")
+@mock.patch("apps_data.services.apps_data_providers.get_session_by_uuid")
+@mock.patch("apps_data.services.apps_data_providers.create_session")
+@mock.patch("apps_data.services.build_dataclass_from_model_instance")
+def test_mock_get_or_create_session_by_application_name_and_session_id__session_does_not_exists(
+    mock_build_dataclass_from_model_instance,
+    mock_create_session,
+    mock_get_session_by_uuid,
+    mock_get_or_create_application_by_name,
+):
+    # Argument
+    application_name = mock.Mock()
+    session_id = mock.Mock()
+
+    # Setup
+    application_data = mock.Mock()
+    session = mock.Mock()
+    session_data = mock.Mock()
+
+    mock_get_or_create_application_by_name.return_value = application_data
+    mock_get_session_by_uuid.side_effect = Session.DoesNotExist()
+    mock_create_session.return_value = session
+    mock_build_dataclass_from_model_instance.return_value = session_data
+
+    # Execution
+    result = apps_data_services.get_or_create_session_by_application_name_and_session_id(
+        application_name=application_name, session_id=session_id
+    )
+
+    # Assertions
+    mock_get_or_create_application_by_name.assert_called_once_with(
+        application_name=application_name,
+    )
+    mock_get_session_by_uuid.assert_called_once_with(session_uuid=session_id)
+    mock_create_session.assert_called_once_with(application_id=application_data.id, uuid=session_id)
+    mock_build_dataclass_from_model_instance.assert_called_once()
+
+    assert result == session_data
