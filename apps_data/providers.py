@@ -56,3 +56,11 @@ def get_event_by_id(event_id: int) -> Event:
 def get_events_by_session_uuid(session_uuid: UUID) -> "QuerySet":
     events = Event.objects.filter(session_id=session_uuid)
     return events
+
+
+def get_events_on_time_range(since: datetime, until: datetime) -> "QuerySet":
+    events = Event.objects.filter(
+        timestamp__gte=since,
+        timestamp__lte=until,
+    )
+    return events
