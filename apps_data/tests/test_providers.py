@@ -46,22 +46,23 @@ def test_update_application__application_does_not_exists(django_assert_num_queri
 
 
 @pytest.mark.django_db
-def test_get_application_by_id(django_assert_num_queries):
+def test_get_application_by_name(django_assert_num_queries):
     application = apps_data_recipes.application_mommy_recipe.make()
     with django_assert_num_queries(num=1):
-        retrieved_application = apps_data_providers.get_application_by_id(
-            application_id=application.id
+        retrieved_application = apps_data_providers.get_application_by_name(
+            application_name=application.name
         )
         assert retrieved_application is not None
         assert isinstance(retrieved_application, Application) is True
         assert retrieved_application.id == application.id
+        assert retrieved_application.name == application.name
 
 
 @pytest.mark.django_db
-def test_get_application_by_id__application_does_not_exists(django_assert_num_queries):
+def test_get_application_by_name__application_does_not_exists(django_assert_num_queries):
     with django_assert_num_queries(num=1):
         with pytest.raises(Application.DoesNotExist):
-            _ = apps_data_providers.get_application_by_id(application_id=0)
+            _ = apps_data_providers.get_application_by_name(application_name="Foo")
 
 
 @pytest.mark.django_db
@@ -69,7 +70,7 @@ def test_create_session(django_assert_num_queries):
     application = apps_data_recipes.application_mommy_recipe.make()
     with django_assert_num_queries(num=2):
         session = apps_data_providers.create_session(
-            application_id=application.id, uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
+            application_name=application.name, uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
         )
         assert session is not None
         assert isinstance(session, Session) is True
@@ -83,7 +84,7 @@ def test_create_session__application_does_not_exists(django_assert_num_queries):
     with django_assert_num_queries(num=1):
         with pytest.raises(Application.DoesNotExist):
             _ = apps_data_providers.create_session(
-                application_id=0, uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
+                application_name="Foo", uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
             )
 
 

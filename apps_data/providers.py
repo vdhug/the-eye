@@ -18,14 +18,14 @@ def update_application(application_id: int, name: str) -> Application:
     return application
 
 
-def get_application_by_id(application_id: int) -> Application:
-    application = Application.objects.get(id=application_id)
+def get_application_by_name(application_name: str) -> Application:
+    application = Application.objects.get(name=application_name)
     return application
 
 
-def create_session(application_id: int, uuid: UUID) -> Session:
-    _ = get_application_by_id(application_id=application_id)
-    session = Session.objects.create(uuid=uuid, application_id=application_id)
+def create_session(application_name: str, uuid: UUID) -> Session:
+    application = get_application_by_name(application_name=application_name)
+    session = Session.objects.create(uuid=uuid, application_id=application.id)
     return session
 
 

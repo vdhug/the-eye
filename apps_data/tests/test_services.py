@@ -31,48 +31,48 @@ def test_mock_create_application(mock_build_dataclass_from_model_instance, mock_
     assert result == application_data
 
 
-@mock.patch("apps_data.services.apps_data_providers.get_application_by_id")
+@mock.patch("apps_data.services.apps_data_providers.get_application_by_name")
 @mock.patch("apps_data.services.build_dataclass_from_model_instance")
-def test_mock_get_application_by_id(
-    mock_build_dataclass_from_model_instance, mock_get_application_by_id
+def test_mock_get_application_by_name(
+    mock_build_dataclass_from_model_instance, mock_get_application_by_name
 ):
     # Argument
-    application_id = mock.Mock()
+    application_name = mock.Mock()
 
     # Setup
     application = mock.Mock()
     application_data = mock.Mock()
 
-    mock_get_application_by_id.return_value = application
+    mock_get_application_by_name.return_value = application
     mock_build_dataclass_from_model_instance.return_value = application_data
 
     # Execution
-    result = apps_data_services.get_application_by_id(application_id=application_id)
+    result = apps_data_services.get_application_by_name(application_name=application_name)
 
     # Assertions
-    mock_get_application_by_id.assert_called_once_with(
-        application_id=application_id,
+    mock_get_application_by_name.assert_called_once_with(
+        application_name=application_name,
     )
     mock_build_dataclass_from_model_instance.assert_called_once()
 
     assert result == application_data
 
 
-@mock.patch("apps_data.services.apps_data_providers.get_application_by_id")
+@mock.patch("apps_data.services.apps_data_providers.get_application_by_name")
 @mock.patch("apps_data.services.build_dataclass_from_model_instance")
-def test_mock_get_application_by_id__application_does_not_exists(
-    mock_build_dataclass_from_model_instance, mock_get_application_by_id
+def test_mock_get_application_by_name__application_does_not_exists(
+    mock_build_dataclass_from_model_instance, mock_get_application_by_name
 ):
     # Argument
-    application_id = mock.Mock()
+    application_name = mock.Mock()
 
     # Setup
-    mock_get_application_by_id.side_effect = Application.DoesNotExist()
+    mock_get_application_by_name.side_effect = Application.DoesNotExist()
 
     # Execution
     with pytest.raises(ApplicationDoesNotExists):
-        _ = apps_data_services.get_application_by_id(application_id=application_id)
+        _ = apps_data_services.get_application_by_name(application_name=application_name)
         # Assertions
-        mock_get_application_by_id.assert_called_once_with(
-            application_id=application_id,
+        mock_get_application_by_name.assert_called_once_with(
+            application_name=application_name,
         )

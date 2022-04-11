@@ -14,9 +14,9 @@ def create_application(name: str) -> ApplicationData:
     return application_data
 
 
-def get_application_by_id(application_id: int) -> ApplicationData:
+def get_application_by_name(application_name: str) -> ApplicationData:
     try:
-        application = apps_data_providers.get_application_by_id(application_id=application_id)
+        application = apps_data_providers.get_application_by_name(application_name=application_name)
     except Application.DoesNotExist:
         raise ApplicationDoesNotExists
     application_data = build_dataclass_from_model_instance(
