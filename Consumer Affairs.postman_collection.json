@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "c9a660cc-886a-41ba-a8a9-de8d54ddc8da",
+		"name": "Consumer Affairs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"session_id\": \"e2085be5-9137-4e4e-80b5-f1ffddc25423\",\n  \"category\": \"page interaction\",\n  \"name\": \"pageview\",\n  \"data\": {\n    \"host\": \"www.consumeraffairs.com\",\n    \"path\": \"/\"\n  },\n  \"timestamp\": \"2021-01-03 09:15:27.243860\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/apps_data/event",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"apps_data",
+						"event"
+					]
+				},
+				"description": "Register a new Event instance."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Event by date range",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/apps_data/event?since=2021-01-03 09:15:27&until=2021-01-04 09:15:28",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"apps_data",
+						"event"
+					],
+					"query": [
+						{
+							"key": "since",
+							"value": "2021-01-03 09:15:27"
+						},
+						{
+							"key": "until",
+							"value": "2021-01-04 09:15:28"
+						}
+					]
+				},
+				"description": "Create event"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Event by session id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/apps_data/event?session_id=e2085be5-9137-4e4e-80b5-f1ffddc25423",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"apps_data",
+						"event"
+					],
+					"query": [
+						{
+							"key": "session_id",
+							"value": "e2085be5-9137-4e4e-80b5-f1ffddc25423"
+						}
+					]
+				},
+				"description": "Create event"
+			},
+			"response": []
+		}
+	]
+}
