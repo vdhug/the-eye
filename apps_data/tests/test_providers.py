@@ -167,3 +167,45 @@ def test_get_event_by_id(django_assert_num_queries):
         assert retrieved_event.category == event.category
         assert retrieved_event.payload == event.payload
         assert retrieved_event.timestamp == timestamp
+
+
+@pytest.mark.django_db
+def test_get_events_by_session_uuid(django_assert_num_queries):
+    session_1 = apps_data_recipes.session_mommy_recipe.make(
+        uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
+    )
+    session_2 = apps_data_recipes.session_mommy_recipe.make(
+        uuid=UUID("40c8ab78-4425-4dfd-8295-36092e4dbf4e")
+    )
+    _ = apps_data_recipes.session_mommy_recipe.make(
+        uuid=UUID("3ea3d8f5-442d-453a-b964-01229e087011")
+    )
+    timestamp = make_aware(
+        datetime.strptime("2021-01-04 09:15:27.243860", "%Y-%m-%d %H:%M:%S.%f"), TIMEZONE
+    )
+    _ = apps_data_recipes.event_mommy_recipe.make(session=session_1, timestamp=timestamp)
+    _ = apps_data_recipes.event_mommy_recipe.make(session=session_2, timestamp=timestamp)
+    with django_assert_num_queries(num=1):
+        events_from_session_1 = apps_data_providers.get_events_by_session_uuid(
+            session_uuid=session_1.uuid
+        )
+        assert events_from_session_1.count() == 1
+
+
+@pytest.mark.django_db
+def test_get_events_by_session_uuid__no_events_found(django_assert_num_queries):
+    session_1 = apps_data_recipes.session_mommy_recipe.make(
+        uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
+    )
+    session_2 = apps_data_recipes.session_mommy_recipe.make(
+        uuid=UUID("40c8ab78-4425-4dfd-8295-36092e4dbf4e")
+    )
+    timestamp = make_aware(
+        datetime.strptime("2021-01-04 09:15:27.243860", "%Y-%m-%d %H:%M:%S.%f"), TIMEZONE
+    )
+    _ = apps_data_recipes.event_mommy_recipe.make(session=session_1, timestamp=timestamp)
+    with django_assert_num_queries(num=1):
+        events_from_session_2 = apps_data_providers.get_events_by_session_uuid(
+            session_uuid=session_2.uuid
+        )
+        assert events_from_session_2.count() == 0
