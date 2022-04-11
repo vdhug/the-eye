@@ -51,3 +51,8 @@ def create_event(
 def get_event_by_id(event_id: int) -> Event:
     event = Event.objects.get(id=event_id)
     return event
+
+
+def get_events_by_session_uuid(session_uuid: UUID) -> "QuerySet":
+    events = Event.objects.filter(session_id=session_uuid)
+    return events
