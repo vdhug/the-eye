@@ -68,24 +68,14 @@ def test_get_application_by_name__application_does_not_exists(django_assert_num_
 @pytest.mark.django_db
 def test_create_session(django_assert_num_queries):
     application = apps_data_recipes.application_mommy_recipe.make()
-    with django_assert_num_queries(num=2):
+    with django_assert_num_queries(num=1):
         session = apps_data_providers.create_session(
-            application_name=application.name, uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
+            application_id=application.id, uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
         )
         assert session is not None
         assert isinstance(session, Session) is True
         assert session.application_id == application.id
         assert session.uuid == UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
-
-
-@pytest.mark.django_db
-def test_create_session__application_does_not_exists(django_assert_num_queries):
-    _ = apps_data_recipes.application_mommy_recipe.make()
-    with django_assert_num_queries(num=1):
-        with pytest.raises(Application.DoesNotExist):
-            _ = apps_data_providers.create_session(
-                application_name="Foo", uuid=UUID("188a8f86-75f0-44c9-9db5-f525846249ce")
-            )
 
 
 @pytest.mark.django_db
