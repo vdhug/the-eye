@@ -1,8 +1,10 @@
+import logging
 from uuid import UUID
 from datetime import datetime
 
 from apps_data.dataclasses import ApplicationData, EventData, SessionData
 from apps_data import providers as apps_data_providers
+from apps_data.exceptions import PayloadValidationError
 from apps_data.models import Application, Session
 from apps_data.utils import build_dataclass_from_model_instance
 from apps_data.validators import payload_validation
@@ -37,10 +39,16 @@ def get_or_create_session_by_application_name_and_session_id(
 
 
 def register_event(session_id: UUID, category: str, name: str, payload: dict, timestamp: datetime):
-    payload_validation(category=category, name=name, payload=payload)
+    try:
+        payload_validation(category=category, name=name, payload=payload)
+    except PayloadValidationError:
+        logging.error(
+            msg=f"Payload validation error. Session id {session_id} and payload {payload}",
+        )
     application_name = payload.get("host")
 
     if not session_id or not category or not name or not application_name or not timestamp:
+        logging.error(msg="Missing required info to register event")
         raise ValueError
     session_data = get_or_create_session_by_application_name_and_session_id(
         application_name=application_name, session_id=session_id
