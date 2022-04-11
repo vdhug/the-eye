@@ -1,7 +1,7 @@
 # Third-party app imports
 from model_bakery.recipe import Recipe as mommy_recipe, foreign_key
 from datetime import datetime
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from apps_data.models import Application, Session, Event
 
@@ -16,7 +16,7 @@ application_mommy_recipe = mommy_recipe(
 session_mommy_recipe = mommy_recipe(
     Session,
     application=foreign_key(application_mommy_recipe),
-    uuid=UUID("e2085be5-9137-4e4e-80b5-f1ffddc25423"),
+    uuid=uuid4,
 )
 
 # Event mommy recipes
