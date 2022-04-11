@@ -6,3 +6,5 @@ model_bakery
 black
 pre-commit
 pytest-django
+pytz
+djangorestframework
