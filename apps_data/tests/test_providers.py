@@ -2,7 +2,7 @@ import pytest
 import pytz
 
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.utils.timezone import make_aware
 
@@ -209,3 +209,32 @@ def test_get_events_by_session_uuid__no_events_found(django_assert_num_queries):
             session_uuid=session_2.uuid
         )
         assert events_from_session_2.count() == 0
+
+
+@pytest.mark.django_db
+def test_get_events_on_time_range(django_assert_num_queries):
+    since = make_aware(
+        datetime.strptime("2021-01-04 09:15:27.243860", "%Y-%m-%d %H:%M:%S.%f"), TIMEZONE
+    )
+    until = since + timedelta(days=1)
+
+    _ = apps_data_recipes.event_mommy_recipe.make(timestamp=since)
+    _ = apps_data_recipes.event_mommy_recipe.make(timestamp=until)
+    with django_assert_num_queries(num=1):
+        events = apps_data_providers.get_events_on_time_range(since=since, until=until)
+        assert events.count() == 2
+
+
+@pytest.mark.django_db
+def test_get_events_on_time_range__events_not_found(django_assert_num_queries):
+    since = make_aware(
+        datetime.strptime("2021-01-04 09:15:27.243860", "%Y-%m-%d %H:%M:%S.%f"), TIMEZONE
+    )
+    until = since + timedelta(days=1)
+
+    timestamp = until + timedelta(hours=1)
+
+    _ = apps_data_recipes.event_mommy_recipe.make(timestamp=timestamp)
+    with django_assert_num_queries(num=1):
+        events = apps_data_providers.get_events_on_time_range(since=since, until=until)
+        assert events.count() == 0
