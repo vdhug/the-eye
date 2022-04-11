@@ -5,6 +5,7 @@ from uuid import UUID
 
 @dataclass
 class ApplicationData:
+    id: int
     name: str
 
 
@@ -16,6 +17,7 @@ class SessionData:
 
 @dataclass
 class EventData:
+    id: int
     session: SessionData
     name: str
     category: str
